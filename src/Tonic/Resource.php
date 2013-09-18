@@ -51,7 +51,7 @@ class Resource
 
         if (isset($resourceMetadata['methods'])) {
             foreach ($resourceMetadata['methods'] as $key => $methodMetadata) {
-                if ($key != 'setup') {
+                if ($key != 'setup' && $key != 'uri') {
                     $mmd = $methodMetadata;
                     if (isset($resourceMetadata['methods']['setup'])) {
                         $mmd += $resourceMetadata['methods']['setup'];
@@ -89,7 +89,7 @@ class Resource
                                 $methodPriorities[$key]['exception'] = $error;
                                 break;
                             }
-                        } else {
+                        } else if ($conditionName != 'uri') {
                             throw new \Exception(sprintf(
                                 'Condition method "%s" not found in Resource class "%s"',
                                 $conditionName,
@@ -130,7 +130,17 @@ class Resource
         $methodName = null;
         $bestMatch = -2;
         foreach ($methodPriorities as $name => $priority) {
-            if ($priority['value'] > $bestMatch) {
+            $hasUri = isset($resourceMetadata['methods'][$name]['uri'][0]);
+            $hasMethod = isset($resourceMetadata['methods'][$name]['method'][0][0]);
+                        
+            if ($hasUri && $hasMethod && $this->request->method == $resourceMetadata['methods'][$name]['method'][0][0]) {
+                $uriRegex = '|^'.$resourceMetadata['methods'][$name]['uri'][0].'$|';
+                $match = preg_match($uriRegex, $this->request->uri);
+                if ($match) {
+                    $bestMatch = $priority['value'];
+                    $methodName = $name;
+                }
+            } else if ($priority['value'] > $bestMatch) {
                 $bestMatch = $priority['value'];
                 $methodName = $name;
             }

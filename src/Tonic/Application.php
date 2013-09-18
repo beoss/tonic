@@ -56,6 +56,21 @@ class Application
                 $this->mount($namespaceName, $uriSpace);
             }
         }
+        
+        // PUT requests handle updates
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+            parse_str(file_get_contents('php://input'), $_REQUEST);
+        }
+
+        // DELTE requests handle removal of items
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            parse_str(file_get_contents('php://input'), $_REQUEST);
+        }
+
+        // Add Query String variables from PUT/DELETE to request scope
+        if (in_array($_SERVER['REQUEST_METHOD'], array('PUT', 'DELETE')) && $_SERVER['QUERY_STRING'] != '') {
+            parse_str($_SERVER['QUERY_STRING'], $_REQUEST);
+        }
     }
 
     /**
@@ -334,6 +349,10 @@ class Application
                         if (method_exists($targetClass, $annotationMethodName)) {
                             foreach ($value as $v) {
                                 $methodMetadata[$annotationMethodName][] = $v;
+                            }
+                        } else if ($annotationMethodName == 'uri') {
+                            foreach ($value as $v) {
+                                $methodMetadata[$annotationMethodName] = $this->uriTemplateToRegex($v);
                             }
                         }
                     }

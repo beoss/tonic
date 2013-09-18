@@ -215,7 +215,8 @@ class Request
             }
         }
 
-        return $uri;
+        /* remove query string variables from uri */
+        return (strpos($uri, '?') > 0 ? substr($uri, 0, strpos($uri, '?')) : $uri);
     }
 
     /**
