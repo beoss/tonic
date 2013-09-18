@@ -24,7 +24,7 @@ class Autoloader
     public function autoload($className)
     {
         if ($this->namespace == null || $this->namespace.'\\' === substr($className, 0, strlen($this->namespace.'\\'))) {
-            $fileName .= __DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, str_replace($this->namespace.'\\', '', $className)) . '.php';
+            $fileName = __DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, str_replace($this->namespace.'\\', '', $className)) . '.php';
             require $fileName;
         }
     }
