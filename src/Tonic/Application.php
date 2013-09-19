@@ -62,7 +62,7 @@ class Application
             parse_str(file_get_contents('php://input'), $_REQUEST);
         }
 
-        // DELTE requests handle removal of items
+        // DELETE requests handle removal of items
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
             parse_str(file_get_contents('php://input'), $_REQUEST);
         }
